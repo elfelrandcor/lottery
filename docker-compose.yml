@@ -76,3 +76,15 @@ services:
       - front
     networks:
       - default
+
+  bank:
+    image: node:8
+    user: "node"
+    volumes:
+    - "./sources/mock:/home/node/app"
+    working_dir: /home/node/app
+    environment:
+    - NODE_ENV=production
+    expose:
+    - "8080"
+    command: "npm start"

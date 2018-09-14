@@ -1,0 +1,13 @@
+{
+  "name": "bank_mock",
+  "version": "1.0.0",
+  "description": "Bank api mock",
+  "author": "juriy.panasevich@gmail.com",
+  "main": "server.js",
+  "scripts": {
+    "start": "npm install && node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.1"
+  }
+}
