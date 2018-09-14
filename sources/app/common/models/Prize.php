@@ -77,4 +77,9 @@ class Prize extends StiActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
+
+    public function description(): string
+    {
+        return 'Prize';
+    }
 }

@@ -18,6 +18,17 @@ use common\models\Prize;
  */
 class Gift extends Prize
 {
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            [['item_id'], 'safe'],
+        ]);
+    }
+
+    public function description(): string
+    {
+        return 'Gift:' . $this->item->name;
+    }
 
     public function getItem(): \yii\db\ActiveQuery
     {

@@ -15,6 +15,15 @@ use common\models\Prize;
  */
 class Points extends Prize
 {
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            [['amount'], 'safe'],
+        ]);
+    }
 
-
+    public function description(): string
+    {
+        return 'Account Points:' . $this->amount;
+    }
 }

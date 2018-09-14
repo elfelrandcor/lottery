@@ -15,5 +15,15 @@ use common\models\Prize;
  */
 class Money extends Prize
 {
+    public function rules()
+    {
+        return array_merge(parent::rules(), [
+            [['amount'], 'safe'],
+        ]);
+    }
 
+    public function description(): string
+    {
+        return 'Real money: ' . $this->amount;
+    }
 }
