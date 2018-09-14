@@ -12,20 +12,20 @@ return [
         'gifter' => [
             'class' => common\gifter\Gifter::class,
             'types' => [
-                [
+                \common\models\prize\Money::class => [
                     'class' => \common\gifter\form\Money::class,
                     'deliveries' => [
                         \common\delivery\Bank::class,
                         \common\delivery\Convert::class
                     ],
                 ],
-                [
+                \common\models\prize\Points::class => [
                     'class' => \common\gifter\form\Points::class,
                     'deliveries' => [
                         \common\delivery\Account::class,
                     ],
                 ],
-                [
+                \common\models\prize\Gift::class => [
                     'class' => \common\gifter\form\PhysItem::class,
                     'deliveries' => [
                         \common\delivery\PostMail::class,
