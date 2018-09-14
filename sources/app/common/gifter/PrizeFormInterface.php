@@ -6,7 +6,7 @@
 namespace common\gifter;
 
 
-interface PrizeInterface
+interface PrizeFormInterface
 {
 
     /**
