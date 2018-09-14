@@ -1,60 +1,32 @@
-<p align="center">
-    <a href="https://github.com/yiisoft" target="_blank">
-        <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
-    </a>
-    <h1 align="center">Yii 2 Advanced Project Template</h1>
-    <br>
-</p>
+## Краткое описание проекта
+Каждый из возможных призов имеет свой набор доставок, например физический товар - доставку почтой, денежный приз - зачисление на банковский счет(http-запрос) или конвертация в баллы лояльности(с определенным коэф, который задается в настройках приложения)
 
-Yii 2 Advanced Project Template is a skeleton [Yii 2](http://www.yiiframework.com/) application best for
-developing complex Web applications with multiple tiers.
+При выборе приза, он резервируется за пользователем, пока тот не подтвердит получение или не откажется от приза. При этом, если приз денежный, то общий денежный фонд уменьшается на сумму приза, чтобы не получить отрицательный фонд при параллельных запросах несколькиз пользователей. Так же происходит и с физическими предметами. В случае отказа - фонд восполняется, либо предмет возвращается в список доступных(каждый предмет обладает своим количеством). Пользователь не может получить новый приз пока не подтвердит или не откажется от текущего. При подтверждении приза - в очередь ставится задача на доставку.
+Доставка приза(разбор очереди) осуществляется командой	`php yii delivery/run` или, если через докер, `docker-compose exec front php yii delivery/run`
 
-The template includes three tiers: front end, back end, and console, each of which
-is a separate Yii application.
 
-The template is designed to work in a team development environment. It supports
-deploying the application in different environments.
+## Инструкция по запуску
+Проект выполнен в docker-окружении, поэтому для запуска достаточно выполнить команду `docker-compose up -d --build` в корне проекта, и дождаться когда будет завершена загрузка образов и установка приложения(загрузка composer-пакетов)
+После чего он будет доступен по адресу `http://localhost:10000/`
 
-Documentation is at [docs/guide/README.md](docs/guide/README.md).
+В случае если проект необходимо запустить отдельно, следует в `.env` прописать все необходимы доступы, к базе и моку банковского апи.
+Команда для запуска `composer install; php init --env=Development; php yii migrate --interactive=0; php yii_test migrate --interactive=0`
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Total Downloads](https://img.shields.io/packagist/dt/yiisoft/yii2-app-advanced.svg)](https://packagist.org/packages/yiisoft/yii2-app-advanced)
-[![Build Status](https://travis-ci.org/yiisoft/yii2-app-advanced.svg?branch=master)](https://travis-ci.org/yiisoft/yii2-app-advanced)
+## Тесты
+Команда для запуска тестов `docker-compose exec front ./vendor/bin/codecept run unit -c common gifter`
 
-DIRECTORY STRUCTURE
--------------------
+В наличии два тестовых набора - на конвертацию `ConvertPointsTest` и общий `WorkflowTest`
 
-```
-common
-    config/              contains shared configurations
-    mail/                contains view files for e-mails
-    models/              contains model classes used in both backend and frontend
-    tests/               contains tests for common classes    
-console
-    config/              contains console configurations
-    controllers/         contains console controllers (commands)
-    migrations/          contains database migrations
-    models/              contains console-specific model classes
-    runtime/             contains files generated during runtime
-backend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains backend configurations
-    controllers/         contains Web controller classes
-    models/              contains backend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for backend application    
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-frontend
-    assets/              contains application assets such as JavaScript and CSS
-    config/              contains frontend configurations
-    controllers/         contains Web controller classes
-    models/              contains frontend-specific model classes
-    runtime/             contains files generated during runtime
-    tests/               contains tests for frontend application
-    views/               contains view files for the Web application
-    web/                 contains the entry script and Web resources
-    widgets/             contains frontend widgets
-vendor/                  contains dependent 3rd-party packages
-environments/            contains environment-based overrides
-```
+## Интерфейс
+
+![index](1.png)
+
+![after login](2.png)
+
+![points](points.png)
+
+![accepted](accepted.png)
+
+![declined](declined.png)
+
+![convert](convert.png)
