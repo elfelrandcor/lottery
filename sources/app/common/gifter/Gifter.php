@@ -44,7 +44,7 @@ class Gifter extends Component
      */
     public function reserve(User $user): Prize
     {
-        if ($prize = $user->getActivePrize()) {
+        if (!self::$forceType && $prize = $user->getActivePrize()) {
             return $prize;
         }
 
