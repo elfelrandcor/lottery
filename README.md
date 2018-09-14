@@ -19,14 +19,14 @@
 
 ## Интерфейс
 
-![index](1.png)
+![index](sources/app/1.png)
 
-![after login](2.png)
+![after login](sources/app/2.png)
 
-![points](points.png)
+![points](sources/app/points.png)
 
-![accepted](accepted.png)
+![accepted](sources/app/accepted.png)
 
-![declined](declined.png)
+![declined](sources/app/declined.png)
 
-![convert](convert.png)
+![convert](sources/app/convert.png)
