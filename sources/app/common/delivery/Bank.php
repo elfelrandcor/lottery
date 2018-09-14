@@ -7,14 +7,12 @@ namespace common\delivery;
 
 
 use common\exception\DeliveryException;
-use common\gifter\DeliveryInterface;
 use common\models\Prize;
 use common\models\prize\Money;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
-use yii\base\BaseObject;
 
-class Bank extends BaseObject implements DeliveryInterface
+class Bank extends Delivery
 {
     public $url;
 
@@ -77,5 +75,10 @@ class Bank extends BaseObject implements DeliveryInterface
             return false;
         }
         return true;
+    }
+
+    public function description(): string
+    {
+        return 'Bank account';
     }
 }

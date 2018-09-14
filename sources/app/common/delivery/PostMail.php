@@ -6,14 +6,18 @@
 namespace common\delivery;
 
 
-use common\gifter\DeliveryInterface;
 use common\models\Prize;
 
-class PostMail implements DeliveryInterface
+class PostMail extends Delivery
 {
 
     public function deliver(Prize $prize): bool
     {
         return true;
+    }
+
+    public function description(): string
+    {
+        return 'Post mail delivery';
     }
 }

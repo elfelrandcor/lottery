@@ -6,11 +6,10 @@
 namespace common\delivery;
 
 
-use common\gifter\DeliveryInterface;
 use common\models\Prize;
 use common\models\prize\Money;
 
-class Convert implements DeliveryInterface
+class Convert extends Delivery
 {
 
     public $ratio = 1.;
@@ -28,5 +27,10 @@ class Convert implements DeliveryInterface
         $account = \Yii::$app->get(Account::class);
 
         return $account->deliver($prize);
+    }
+
+    public function description(): string
+    {
+        return 'Convert to loyality points';
     }
 }

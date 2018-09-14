@@ -6,12 +6,10 @@
 namespace common\delivery;
 
 
-use common\gifter\DeliveryInterface;
 use common\models\Prize;
 use common\models\prize\Points;
-use yii\base\BaseObject;
 
-class Account extends BaseObject implements DeliveryInterface
+class Account extends Delivery
 {
     /**
      * @param Prize|Points $prize
@@ -21,6 +19,12 @@ class Account extends BaseObject implements DeliveryInterface
     {
         $user = $prize->user;
         $user->balance += $prize->amount;
+
         return $user->save(true, ['balance']);
+    }
+
+    public function description(): string
+    {
+        return 'Loyality points';
     }
 }
