@@ -54,7 +54,7 @@ services:
         - INSTALL_XDEBUG=true
     volumes:
       - ./sources/app:/var/www:cached
-    command: sh -c 'composer install; php init --env=Development; php yii migrate --interactive=0; php-fpm'
+    command: sh -c 'composer install; php init --env=Development; php yii migrate --interactive=0; php yii_test migrate --interactive=0; php-fpm'
     depends_on:
       - mariadb
     expose:
