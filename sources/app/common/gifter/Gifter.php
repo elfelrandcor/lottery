@@ -23,27 +23,45 @@ class Gifter extends Component
 {
     public static $forceType;
 
-    /** @var PrizeInterface[] */
+    /** @var PrizeFormInterface[] */
     public $types;
+
+    /**
+     * @param Prize $prize
+     * @return PrizeFormInterface
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getForm(Prize $prize): PrizeFormInterface
+    {
+        return \Yii::createObject($this->types[\get_class($prize)]);
+    }
 
     /**
      * @param User $user
      * @return Prize
      * @throws Exception
+     * @throws \Exception
      */
     public function reserve(User $user): Prize
     {
+        if ($prize = $user->getActivePrize()) {
+            return $prize;
+        }
+
         return $this->tryReserve($user) ?: $this->createPoints($user);
     }
 
     /**
      * @param Prize $prize
+     * @param \common\gifter\DeliveryInterface $delivery
      * @return Prize
      * @throws \yii\base\InvalidArgumentException
      */
-    public function accept(Prize $prize): Prize
+    public function accept(Prize $prize, DeliveryInterface $delivery): Prize
     {
         $prize->setAsAccepted();
+
+        $this->createDeliverTask($prize, $delivery);
 
         return $prize;
     }
@@ -52,6 +70,7 @@ class Gifter extends Component
      * @param Prize $prize
      * @return Prize
      * @throws \yii\base\InvalidArgumentException
+     * @throws \yii\db\Exception
      */
     public function decline(Prize $prize): Prize
     {
@@ -87,22 +106,41 @@ class Gifter extends Component
         $task->setAsDelivered();
     }
 
-    protected function createDeliverTask(Prize $prize): Deliver
+    /**
+     * @param Prize $prize
+     * @param DeliveryInterface $delivery
+     * @return Deliver
+     */
+    protected function createDeliverTask(Prize $prize, DeliveryInterface $delivery): Deliver
     {
-        //todo
+        $task = new Deliver([
+            'prize_id' => $prize->id,
+            'delivery' => \get_class($delivery),
+        ]);
+        $task->save();
+
+        return $task;
     }
 
+    /**
+     * @param User $user
+     * @return null
+     * @throws Exception
+     * @throws \ReflectionException
+     * @throws \yii\base\InvalidConfigException
+     * @throws \Exception
+     */
     protected function tryReserve(User $user)
     {
         if (!$this->types) {
             return null;
         }
         $max = \count($this->types) - 1;
-        $num = mt_rand(0, $max);
+        $num = random_int(0, $max);
 
-
-        /** @var PrizeInterface $type */
-        $type = \Yii::createObject($this->types[$num]);
+        $list = array_values($this->types);
+        /** @var PrizeFormInterface $type */
+        $type = \Yii::createObject($list[$num]);
 
         $class = $type->getModelClass();
         if (!class_exists($class)) {
@@ -114,6 +152,11 @@ class Gifter extends Component
         return $this->{$method}($user);
     }
 
+    /**
+     * @param User $user
+     * @return Points
+     * @throws \Exception
+     */
     protected function createPoints(User $user): Points
     {
         $prize = new Points([
@@ -126,6 +169,12 @@ class Gifter extends Component
         return $prize;
     }
 
+    /**
+     * @param User $user
+     * @return Money|null
+     * @throws \yii\db\Exception
+     * @throws \Exception
+     */
     public function createMoney(User $user)
     {
         $amount = $this->getMoneyAmount();
@@ -139,6 +188,7 @@ class Gifter extends Component
         $transaction = \Yii::$app->db->beginTransaction();
 
         try {
+            //Напрямую, чтобы избежать race condition
             $sql = sprintf('update %s set amount = amount - %s where id = %s', Fund::tableName(), $amount, $fund->id);
             \Yii::$app
                 ->db
@@ -163,6 +213,11 @@ class Gifter extends Component
         return $prize;
     }
 
+    /**
+     * @param User $user
+     * @return Gift|null
+     * @throws \yii\db\Exception
+     */
     public function createGift(User $user)
     {
         if (!$item = $this->findFreeItem()) {
@@ -173,6 +228,7 @@ class Gifter extends Component
         $transaction = \Yii::$app->db->beginTransaction();
 
         try {
+            //Напрямую, чтобы избежать race condition
             $sql = sprintf('update %s set amount = amount - 1 where id = %s', PhysicalItem::tableName(), $item->id);
             \Yii::$app
                 ->db
@@ -213,11 +269,19 @@ class Gifter extends Component
         return $item;
     }
 
+    /**
+     * @return int
+     * @throws \Exception
+     */
     protected function getPointsAmount(): int
     {
         return random_int(1, 100);
     }
 
+    /**
+     * @return int
+     * @throws \Exception
+     */
     protected function getMoneyAmount(): int
     {
         return random_int(1, 10);
@@ -228,6 +292,10 @@ class Gifter extends Component
         return Fund::find()->one();
     }
 
+    /**
+     * @param Money $prize
+     * @throws \yii\db\Exception
+     */
     protected function freeFunds(Money $prize)
     {
         $fund = $this->findActualFund();
@@ -249,6 +317,10 @@ class Gifter extends Component
 
     }
 
+    /**
+     * @param Gift $prize
+     * @throws \yii\db\Exception
+     */
     protected function freeItem(Gift $prize)
     {
         $transaction = \Yii::$app->db->beginTransaction();
