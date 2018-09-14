@@ -175,7 +175,7 @@ class Gifter extends Component
      * @throws \yii\db\Exception
      * @throws \Exception
      */
-    public function createMoney(User $user)
+    protected function createMoney(User $user)
     {
         $amount = $this->getMoneyAmount();
         $fund = $this->findActualFund();
@@ -218,7 +218,7 @@ class Gifter extends Component
      * @return Gift|null
      * @throws \yii\db\Exception
      */
-    public function createGift(User $user)
+    protected function createGift(User $user)
     {
         if (!$item = $this->findFreeItem()) {
             return null;
