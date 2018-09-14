@@ -159,16 +159,12 @@ class WorkflowTest extends \Codeception\Test\Unit
         /** @var \common\models\prize\Points $prize */
         $prize = $this->tester->grabFixture('prizes', 'reserved_points');
 
-        $prize = $this->gifter->accept($prize);
+        $prize = $this->gifter->accept($prize, new Account());
 
         $this->assertEquals(Prize::STATUS_ACCEPTED, $prize->status);
 
-        $deliveryTask = new Deliver([
-            'prize_id' => $prize->id,
-            'delivery' => Account::class,
-        ]);
-        $this->assertTrue($deliveryTask->save());
-
+        /** @var Deliver $deliveryTask */
+        $deliveryTask = Deliver::find()->where(['prize_id' => $prize->id])->one();
         $this->gifter->deliver($deliveryTask);
 
         $user->refresh();
