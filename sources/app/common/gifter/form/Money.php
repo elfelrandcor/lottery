@@ -6,17 +6,8 @@
 namespace common\gifter\form;
 
 
-use yii\base\BaseObject;
-
-class Money extends BaseObject implements \common\gifter\PrizeInterface
+class Money extends Form
 {
-    public $deliveries = [];
-
-    public function getDeliveries(): array
-    {
-        return $this->deliveries;
-    }
-
     public function getModelClass(): string
     {
         return \common\models\prize\Money::class;
