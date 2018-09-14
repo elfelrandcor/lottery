@@ -12,7 +12,7 @@ class m180912_152816_add_balance_column_into_user_table extends Migration
      */
     public function safeUp()
     {
-        $this->addColumn('{{%user}}', 'balance', $this->integer());
+        $this->addColumn('{{%user}}', 'balance', $this->integer()->defaultValue(0));
     }
 
     /**
